@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login/Register</title>
+        <link rel="stylesheet" href="css/loginregister.css">
+    </head>
+
+    <body>
+        <div class="main-container">
+            <div class="login-container">
+                <h1>Login</h1>
+                <form action="/login" method="post">
+                    <input type="email" name="email" placeholder="example@gmail.com" required>
+                    <input type="password" name="password" placeholder="password" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div class="register-container">
+                <h1>Register</h1>
+                <form action="/register" method="post">
+                    <input type="email" name="email" placeholder="example@gmail.com" required>
+                    <input type="password" name="password" placeholder="password" required>
+                    <input type="password" name="repeated_password" placeholder="Re-type password" required>
+                    <button type="submit">Register</button>
+                </form>
+        </div>
+        <footer>
+            <p>&copy; 2024 TallyTrail. All rights reserved.</p>
+            <a href="https://github.com/MdTanjeemHaider/TallyTrail">GitHub</a>
+        </footer>
+    </body>
+</html>
