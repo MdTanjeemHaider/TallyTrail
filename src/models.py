@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from extension import db
 
 # Transaction class

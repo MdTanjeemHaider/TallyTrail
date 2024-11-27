@@ -29,22 +29,29 @@
             <tbody id="transaction_table">
             </tbody>
         </table>
-        <!-- temp fixed location tansaction adder -->
-        <form action="/add_transaction" method="POST" id="transaction_form">
-            <label for="date">Date and Time:</label>
-            <input type="date" id="date" name="date" required>
-
-            <label for="name">Transaction Name:</label>
-            <input type="text" id="name" name="name" required>
-
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" name="amount" required>
-
-            <label for="recurring">reccuring?</label>
-            <input type="checkbox" id="recurring" name="recurring">
-
-            <button type="submit">Add Transaction</button>
-        </form>
+        <!-- Floating Action Button -->
+        <button class="floating-action-button" onclick="openModal()">+</button>
+        <!-- Transaction Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <form action="/add_transaction" method="POST" id="transaction_form">
+                    <label for="date">Date and Time:</label>
+                    <input type="date" id="date" name="date" required>
+        
+                    <label for="name">Transaction Name:</label>
+                    <input type="text" id="name" name="name" required>
+        
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" name="amount" required>
+        
+                    <label for="recurring">reccuring?</label>
+                    <input type="checkbox" id="recurring" name="recurring">
+        
+                    <button type="submit">Add Transaction</button>
+                </form>
+            </div>
+        </div>
         <footer>
             <p>&copy; 2024 TallyTrail. All rights reserved.</p>
             <a href="https://github.com/MdTanjeemHaider/TallyTrail">GitHub</a>

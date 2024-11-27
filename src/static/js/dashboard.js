@@ -106,7 +106,7 @@ function renderGraph(canvas_id, title, labels, data) {
                 label: title,
                 data: data,
                 backgroundColor: 'rgba(255, 255, 255, 255)',
-                borderColor: 'rgba(0, 0, 0, 255)',
+                borderColor:'rgba(255, 255, 255, 255)',
                 borderWidth: 1
             }]
         },
@@ -120,14 +120,27 @@ function renderGraph(canvas_id, title, labels, data) {
                 y: {
                     title: {
                         display: true,
-                        text: title
+                        text: title,
+                        color: 'rgba(255, 255, 255, 255)'
                     },
-
+                    grid: {
+                        color: 'rgba(255, 255, 255, 255)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 255)'
+                    }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        color: 'rgba(255, 255, 255, 255)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 255)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 255)'
                     }
                 }
             }
@@ -141,4 +154,19 @@ function deleteTransaction(transaction_id) {
         // Reload page
         window.location.reload();
     });
+}
+
+function openModal() {
+    document.getElementById("modal").style.display = "flex"; // Show modal
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none"; // Hide modal
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("modal");
+    if (event.target == modal) {
+        modal.style.display = "none"; // Hide modal if clicked outside
+    }
 }
