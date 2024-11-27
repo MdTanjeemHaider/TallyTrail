@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+        <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js CDN -->
+    </head>
+    <body>
+        <div class="profile-container">
+            <h1>PROFILE GOES HERE</h1>
+            <form action="/logout" method="POST">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+        <div class="graph-container">
+            <canvas id="spending_graph"></canvas>
+            <canvas id="balance_graph"></canvas>
+            <canvas id="income_graph"></canvas>
+        </div>
+        <table>
+            <thead>
+                <th>Date</th>
+                <th>Transaction</th>
+                <th>Amount</th>
+                <th>Type</th>
+            </thead>
+            <tbody id="transaction_table">
+            </tbody>
+        </table>
+        <!-- temp fixed location tansaction adder -->
+        <form action="/add_transaction" method="POST" id="transaction_form">
+            <label for="date">Date and Time:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="name">Transaction Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" required>
+
+            <label for="recurring">reccuring?</label>
+            <input type="checkbox" id="recurring" name="recurring">
+
+            <button type="submit">Add Transaction</button>
+        </form>
+        <footer>
+            <p>&copy; 2024 TallyTrail. All rights reserved.</p>
+            <a href="https://github.com/MdTanjeemHaider/TallyTrail">GitHub</a>
+        </footer>
+    </body>
+</html>
