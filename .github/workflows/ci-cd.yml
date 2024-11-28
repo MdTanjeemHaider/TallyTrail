@@ -59,6 +59,10 @@ jobs:
             rm -rf *
           "
 
+      - name: Upload Files to Oracle
+        run: |
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r ./* ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }}:~/tallytrail/
+
       - name: Create .env File in Oracle
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} "
@@ -72,10 +76,6 @@ jobs:
             echo 'FLASK_SECRET_KEY=${{ secrets.FLASK_SECRET_KEY }}' >> ~/tallytrail/src/.env
             echo 'SQLITE_DATABASE_URI=${{ secrets.SQLITE_DATABASE_URI }}' >> ~/tallytrail/src/.env
           "
-
-      - name: Upload Files to Oracle
-        run: |
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r ./* ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }}:~/tallytrail/
 
       - name: Deploy Application
         run: |
