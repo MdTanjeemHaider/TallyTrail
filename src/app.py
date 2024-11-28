@@ -2,8 +2,8 @@
 from datetime import datetime
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from dotenv import load_dotenv
-from extension import db
-from models import Transaction, User
+from .extension import db
+from .models import Transaction, User
 import pyrebase
 import os
 
@@ -121,16 +121,12 @@ def add_transaction():
             return redirect(url_for('loginregister'))
         
         # Extract transaction data from request
-        try:
-            data = request.form
-            date = datetime.strptime(data['date'], '%Y-%m-%d').date()
-            name = data['name']
-            amount = float(data['amount'])
-            description = data.get('description')
-            user_id=session['uuid']
-        except Exception as e:
-            print(e)
-            return redirect(url_for('dashboard'))
+        data = request.form
+        date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+        name = data['name']
+        amount = float(data['amount'])
+        description = data.get('description')
+        user_id=session['uuid']
         
         # Add transaction to database
         new_transaction = Transaction(date=date, name=name, amount=amount, description=description, user_id=user_id)

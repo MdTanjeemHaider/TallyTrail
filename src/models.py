@@ -1,4 +1,4 @@
-from extension import db
+from .extension import db
 
 # Transaction class
 class Transaction(db.Model):
