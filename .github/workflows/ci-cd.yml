@@ -11,7 +11,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -32,10 +31,44 @@ jobs:
           echo "FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}" >> src/.env
           echo "FLASK_SECRET_KEY=${{ secrets.FLASK_SECRET_KEY }}" >> src/.env
           echo "SQLITE_DATABASE_URI=${{ secrets.SQLITE_DATABASE_URI }}" >> src/.env
-        shell: bash
 
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
       - name: Run Pytest
         run: pytest
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Setup Oracle
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
+            set -e
+            mkdir -p ~/tallytrail && cd ~/tallytrail
+            rm -rf *
+          "
+
+      - name: Upload Files to Oracle
+        run: |
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r ./* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/tallytrail/
+
+      - name: Deploy Application
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
+            cd ~/tallytrail
+            docker stop tallytrail || true
+            docker rm tallytrail || true
+            docker build -t tallytrail .
+            docker run -d --name tallytrail -p 5000:5000 tallytrail
+          "
