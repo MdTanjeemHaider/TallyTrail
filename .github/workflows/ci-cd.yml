@@ -48,12 +48,12 @@ jobs:
       - name: Set Up SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
       - name: Setup Oracle
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} "
             set -e
             mkdir -p ~/tallytrail && cd ~/tallytrail
             rm -rf *
@@ -61,11 +61,11 @@ jobs:
 
       - name: Upload Files to Oracle
         run: |
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r ./* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/tallytrail/
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r ./* ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }}:~/tallytrail/
 
       - name: Deploy Application
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.ORACLE_USER }}@${{ secrets.ORACLE_HOST }} "
             cd ~/tallytrail
             docker stop tallytrail || true
             docker rm tallytrail || true
