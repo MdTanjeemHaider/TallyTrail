@@ -1,0 +1,80 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #202123;
+}
+
+.main-container {
+    flex: 1; /* Fills available space between header and footer */
+}
+
+.logo-container {
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.login-container, .register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #0056b3;
+    padding: 1rem;
+    border-radius: 20px;
+    margin: 1rem auto;
+    max-width: 40%;
+    color: white;
+}
+
+.login-container h1, .register-container h1 {
+    margin: 0;
+}
+
+.login-container form, .register-container form {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+}
+
+.login-container input, .register-container input {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: none;
+}
+
+.login-container button, .register-container button {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: none;
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+    font-weight: bolder;
+    font-size: large;
+}
+
+.login-container button:hover, .register-container button:hover {
+    filter: brightness(1.1);
+}
+
+footer {
+    background-color: #007BFF;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 1.5rem;
+}
+
+footer p {
+    margin: 0;
+}
+
+footer a {
+    margin: 0;
+}

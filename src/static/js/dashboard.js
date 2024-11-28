@@ -1,19 +1,24 @@
 // On page load get transactions from server to display them in a table and graphs
 window.onload = function() {
     // Get data from server
-    fetch('/api/get_transactions')
+    fetch('/get_transactions')
     .then(response => response.json())
     .then(data => {
         // Update the table
         updateTable(data.transactions);
 
+        // Sort table by date
+        sortTable(document.querySelector('th[data-column="date"]'));
+
         // Draw graphs
         drawGraphs(data.transactions);
+
+        console.log(data.transactions);
     }).catch(error => console.error('Error fetching transactions:', error));
 }
 
 function updateTable(transactions) {
-    const table = document.getElementById("transaction_table");
+    const table = document.getElementById("transaction-table");
     table.innerHTML = ""; // Clear the table
 
     transactions.forEach(transaction => {
@@ -21,40 +26,47 @@ function updateTable(transactions) {
         const row = document.createElement('tr');
 
         // Set color based on transaction amount
-        const color = transaction.amount < 0 ? 'red' : 'green';
+        const color = transaction.amount < 0 ? 'darkred' : 'green';
 
         // Create cells
-        const date_cell = document.createElement('td');
-        date_cell.textContent = new Date(transaction.date).toLocaleDateString();
-        date_cell.style.backgroundColor = color;
 
-        const name_cell = document.createElement('td');
-        name_cell.textContent = transaction.name;
-        name_cell.style.backgroundColor = color;
+        // Date cell
+        const dateCell = document.createElement('td');
+        dateCell.textContent = new Date(transaction.date).toLocaleDateString();
+        dateCell.style.backgroundColor = color;
 
-        const amount_cell = document.createElement('td');
-        amount_cell.textContent = transaction.amount;
-        amount_cell.style.backgroundColor = color;
+        // Name cell
+        const nameCell = document.createElement('td');
+        nameCell.textContent = transaction.name;
+        nameCell.style.backgroundColor = color;
 
-        const recurring_cell = document.createElement('td');
-        recurring_cell.textContent = transaction.recurring ? 'Recurring' : 'One time';
-        recurring_cell.style.backgroundColor = color;
+        // Amount cell
+        const amountCell = document.createElement('td');
+        amountCell.textContent = transaction.amount;
+        amountCell.style.backgroundColor = color;
 
-        const delete_cell = document.createElement('td');
-        const delete_button = document.createElement('button');
-        delete_button.textContent = "🗑️";
-        delete_button.onclick = function () {
+        // Description cell
+        const descriptionCell = document.createElement('td');
+        descriptionCell.textContent = transaction.description;
+        descriptionCell.style.backgroundColor = color;
+
+        // Delete cell
+        const deleteCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = '<span class="delete-icon">🗑️</span>';
+        deleteButton.onclick = function () {
             deleteTransaction(transaction.id);
         }
-        delete_cell.appendChild(delete_button);
-        delete_cell.style.backgroundColor = color;
+        deleteButton.style.backgroundColor = color;
+        deleteCell.appendChild(deleteButton);
+        deleteCell.style.backgroundColor = color;
 
         // Append cells to row
-        row.appendChild(date_cell);
-        row.appendChild(name_cell);
-        row.appendChild(amount_cell);
-        row.appendChild(recurring_cell);
-        row.appendChild(delete_cell);
+        row.appendChild(dateCell);
+        row.appendChild(nameCell);
+        row.appendChild(amountCell);
+        row.appendChild(descriptionCell);
+        row.appendChild(deleteCell);
 
         // Append row to table
         table.appendChild(row);
@@ -71,14 +83,14 @@ function drawGraphs(transactions) {
     const balance = [];
     const dates = [];
 
-    let total_balance = 0;
+    let totalBalance = 0;
 
     transactions.forEach(transactions => {
         const date = new Date(transactions.date).toLocaleDateString();
-        total_balance += transactions.amount;
+        totalBalance += transactions.amount;
 
         dates.push(date);
-        balance.push(total_balance);
+        balance.push(totalBalance);
 
         if (transactions.amount < 0) {
             spending.push(transactions.amount);
@@ -90,14 +102,14 @@ function drawGraphs(transactions) {
     });
 
     // Render graphs
-    renderGraph('spending_graph', 'Spending ($)', dates, spending);
-    renderGraph('balance_graph', 'Balance ($)', dates, balance);
-    renderGraph('income_graph', 'Income ($)', dates, income);
+    renderGraph('spending-graph', 'Spending ($)', dates, spending);
+    renderGraph('balance-graph', 'Balance ($)', dates, balance);
+    renderGraph('income-graph', 'Income ($)', dates, income);
 }
 
 // Render a graph on a canvas
-function renderGraph(canvas_id, title, labels, data) {
-    const context = document.getElementById(canvas_id).getContext('2d');
+function renderGraph(canvasId, title, labels, data) {
+    const context = document.getElementById(canvasId).getContext('2d');
     new Chart(context, {
         type: 'line',
         data: {
@@ -107,7 +119,7 @@ function renderGraph(canvas_id, title, labels, data) {
                 data: data,
                 backgroundColor: 'rgba(255, 255, 255, 255)',
                 borderColor:'rgba(255, 255, 255, 255)',
-                borderWidth: 1
+                borderWidth: 2
             }]
         },
         options: {
@@ -148,11 +160,61 @@ function renderGraph(canvas_id, title, labels, data) {
     });
 }
 
-function deleteTransaction(transaction_id) {
+function filterTable() {
+    const input = document.getElementById('search-input');
+    const table = document.getElementById('transaction-table');
+    const rows = Array.from(table.querySelectorAll('tr'));
+
+    rows.forEach(row => {
+        const transactionName = row.children[1].textContent.toLowerCase();
+        const description = row.children[3].textContent.toLowerCase();
+
+        if (transactionName.includes(input.value.toLowerCase()) || description.includes(input.value.toLowerCase())) {
+            row.style.display = ''; // Show row
+        } else {
+            row.style.display = 'none'; // Hide row
+        }
+
+    })
+}
+
+function sortTable(header) {
+    const table = document.getElementById('transaction-table');
+    const rows = Array.from(table.querySelectorAll('tr')); // Get all table rows
+    const columnIndex = Array.from(header.parentNode.children).indexOf(header); // Get column index
+    const isAscending = header.getAttribute('data-order') === 'asc'; // Check current sort order
+
+    // Clear sort indicators on all headers
+    header.parentNode.querySelectorAll('th').forEach(th => th.removeAttribute('data-order'));
+
+    // Set sort order for the clicked column
+    header.setAttribute('data-order', isAscending ? 'desc' : 'asc');
+
+    // Sort rows
+    const sortedRows = rows.sort((a, b) => {
+        const aValue = a.children[columnIndex].textContent.trim();
+        const bValue = b.children[columnIndex].textContent.trim();
+
+        if (isNaN(aValue) && isNaN(bValue)) {
+            return isAscending
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        } else {
+            return isAscending ? aValue - bValue : bValue - aValue;
+        }
+    });
+
+    // Append sorted rows back to the table body
+    sortedRows.forEach(row => table.appendChild(row));
+}
+
+
+
+function deleteTransaction(transactionId) {
     // Send delete request to server
-    fetch(`/delete_transaction/${transaction_id}`,{method: 'DELETE'}).then(response => {
+    fetch(`/delete_transaction/${transactionId}`,{method: 'DELETE'}).then(response => {
         // Reload page
-        window.location.reload();
+        window.location.href = response.url;
     });
 }
 
@@ -169,4 +231,10 @@ window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none"; // Hide modal if clicked outside
     }
+}
+
+function logout() {
+    fetch('/logout', {method: 'POST'}).then(response => {
+        window.location.href = response.url;
+    })
 }

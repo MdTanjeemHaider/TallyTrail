@@ -3,11 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <title>Login/Register</title>
-        <link rel="stylesheet" href="css/loginregister.css">
+        <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/loginregister.css') }}">
     </head>
 
     <body>
         <div class="main-container">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" width="200px">
+                <h1>TallyTrail</h1>
+            </div>
             <div class="login-container">
                 <h1>Login</h1>
                 <form action="/login" method="post">
@@ -24,6 +29,7 @@
                     <input type="password" name="repeated_password" placeholder="Re-type password" required>
                     <button type="submit">Register</button>
                 </form>
+            </div>
         </div>
         <footer>
             <p>&copy; 2024 TallyTrail. All rights reserved.</p>
