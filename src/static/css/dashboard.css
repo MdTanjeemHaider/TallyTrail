@@ -1,215 +1,192 @@
+/* General Reset and Layout Setup */
 html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    background-color: #202123;
+    height: 100%; /* Ensure full height */
+    margin: 0; /* Remove default margins */
+    display: flex; /* Flexbox for overall layout */
+    flex-direction: column; /* Stack elements vertically */
+    background-color: #202123; /* Dark background */
 }
 
+/* Navigation Bar */
 nav {
-    background-color: #007BFF;
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
+    background-color: #007BFF; /* Primary blue color */
+    margin: 0; /* Remove default margin */
+    display: flex; /* Horizontal layout */
+    flex-direction: row; /* Align items in a row */
+    justify-content: space-between; /* Space between items */
+    margin-bottom: 1.5rem; /* Gap below nav */
 }
 
 nav p {
-    color: white;
-    font-size: 1.5rem;
-    margin: 0;
-    padding: 0.5rem;
+    color: white; /* White text for contrast */
+    font-size: 1.5rem; /* Larger font size */
+    margin: 0; /* Remove default margin */
+    padding: 0.5rem; /* Add padding */
 }
 
 nav button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-    padding: 0.5rem;
+    background-color: #007BFF; /* Match nav background */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 1.5rem; /* Large font */
+    padding: 0.5rem; /* Space around text */
 }
 
 nav button:hover {
-    background-color: #2b92ff;
+    background-color: #2b92ff; /* Lighter blue on hover */
 }
 
+/* Material Symbols Styling */
 .material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
+/* Main Content Area */
 .main-container {
-    flex: 1; /* Fills available space between header and footer */
+    flex: 1; /* Fill space between header and footer */
 }
 
+/* Graph Container */
 .graph-container {
-    width: 90%;
-    height: 20vh;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    width: 90%; /* Center container width */
+    height: 20vh; /* Fixed height */
+    margin: 0 auto; /* Center horizontally */
+    display: flex; /* Flex layout for child alignment */
+    justify-content: space-around; /* Even spacing between graphs */
+    align-items: center; /* Center graphs vertically */
 }
 
 .graph-container canvas {
-    border: 0.2rem solid white;
+    border: 0.2rem solid white; /* White border for visibility */
 }
 
+/* Search Bar */
 .search-container {
-    width: 90%;
-    margin: 10px auto;
-    display: flex;
-    justify-content: center;
+    width: 90%; /* Center container width */
+    margin: 10px auto; /* Center and add margin */
+    display: flex; /* Flex layout for alignment */
+    justify-content: center; /* Center items */
 }
 
 .search-container input {
-    width: 60%;
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 10px;
+    width: 60%; /* Input box width */
+    padding: 10px; /* Space inside input */
+    font-size: 1rem; /* Standard font size */
+    border: none; /* Remove default border */
+    border-radius: 10px; /* Rounded corners */
 }
 
+/* Table Styling */
 table {
-    width: 90%;
-    margin: 10px auto;
-    color: white;
-    border-style: solid;
-    border-width: 1px;
-    padding: 10px;
-    table-layout: fixed;
-    border-collapse: collapse;
+    width: 90%; /* Center table width */
+    margin: 10px auto; /* Center and add margin */
+    color: white; /* White text for contrast */
+    border-style: solid; /* Solid borders */
+    border-width: 1px; /* Border width */
+    padding: 10px; /* Space around table */
+    table-layout: fixed; /* Fixed column width */
+    border-collapse: collapse; /* Merge borders */
 }
 
+/* Table Header Sorting Icons */
 th[data-order="asc"]::after {
-    content: " ▲";
+    content: " ▲"; /* Up arrow for ascending order */
 }
 
 th[data-order="desc"]::after {
-    content: " ▼";
+    content: " ▼"; /* Down arrow for descending order */
 }
 
-
+/* Table Cell and Header Styling */
 table th, table td {
-    text-align: center;
-    word-wrap: break-word; /* Break words if too long */
-    word-break: break-word; /* Break words if they overflow */
-    vertical-align: center; /* Aligns content to the top of the cell */
-    border: 2px solid white;
+    text-align: center; /* Center-align text */
+    word-wrap: break-word; /* Wrap long words */
+    word-break: break-word; /* Break overflowing words */
+    vertical-align: center; /* Center-align content */
+    border: 2px solid white; /* White border */
 }
 
+/* Table Button Styling */
 table button {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    border: none;
-    cursor: pointer;
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    width: 100%; /* Full width of the cell */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Pointer cursor on hover */
 }
 
-table th:nth-child(1), table td:nth-child(1) {
-    width: 20%;
+/* Specific Column Widths */
+table th:nth-child(1), table td:nth-child(1) { width: 20%; }
+table th:nth-child(2), table td:nth-child(2) { width: 30%; }
+table th:nth-child(3), table td:nth-child(3) { width: 15%; }
+table th:nth-child(4), table td:nth-child(4) { width: 30%; }
+table th:nth-child(5), table td:nth-child(5) { width: 5%; }
+
+/* Button Hover Effect */
+table button:hover .delete-icon {
+    filter: brightness(1.5); /* Brighten icon on hover */
 }
 
-table th:nth-child(2), table td:nth-child(2) {
-    width: 30%;
-}
-
-table th:nth-child(3), table td:nth-child(3) {
-    width: 15%;
-}
-
-table th:nth-child(4), table td:nth-child(4) {
-    width: 30%;
-}
-
-table th:nth-child(5), table td:nth-child(5) {
-    width: 5%;
-}
-
-table button:hover .delete-icon{
-    filter: brightness(1.5);
-}
-
+/* Floating Action Button */
 .floating-action-button {
-    /* Sizing */
-    width: 60px;
-    height: 60px;
-    bottom: 10px;
-    right: 10px;
-    font-size: 40px;
-
-    /* Positioning */
-    position: fixed;
-    display: flex;
+    width: 60px; /* Fixed size */
+    height: 60px; /* Fixed size */
+    bottom: 10px; /* Positioned near bottom */
+    right: 10px; /* Positioned near right */
+    font-size: 40px; /* Large font for icon */
+    position: fixed; /* Fixed at viewport */
+    display: flex; /* Flex layout for centering */
     align-items: center;
     justify-content: center;
-
-    /* Other Styling */
-    background-color: #007BFF;
-    color: white;
-    border: solid white;
-    border-radius: 100%;
-    cursor: pointer;
+    background-color: #007BFF; /* Primary blue */
+    color: white; /* White icon color */
+    border: solid white; /* White border */
+    border-radius: 100%; /* Circle shape */
+    cursor: pointer; /* Pointer cursor */
 }
 
 .floating-action-button:hover {
-    background-color: #2b92ff;
+    background-color: #2b92ff; /* Lighter blue on hover */
 }
 
+/* Modal Styling */
 .modal {
-    /* Sizing */
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-
-    /* Positioning */
-    z-index: 1000; /* Make sure the modal is on top of everything */
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    justify-content: center;
-    align-items: center;
-
-    /* Other Styling */
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%; /* Full screen */
+    height: 100%; /* Full screen */
+    overflow: auto; /* Enable scrolling */
+    z-index: 1000; /* Topmost layer */
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed position */
+    top: 0; /* Start at top */
+    left: 0; /* Start at left */
+    justify-content: center; /* Center modal horizontally */
+    align-items: center; /* Center modal vertically */
+    background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
 }
 
 .modal-content {
-    /* Sizing */
-    border-radius: 10px;
-
-    /* Positioning */
-    justify-items: center;
-    text-align: center;
-    padding: 20px;
-
-    /* Other Styling */
-    background-color: white;
+    border-radius: 10px; /* Rounded corners */
+    justify-items: center; /* Center items */
+    text-align: center; /* Center text */
+    padding: 20px; /* Space inside modal */
+    background-color: white; /* White background */
 }
 
 .modal-content form {
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Flex layout */
+    flex-direction: column; /* Stack inputs vertically */
 }
 
+/* Footer Styling */
 footer {
-    background-color: #007BFF;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    margin-top: 1.5rem;
+    background-color: #007BFF; /* Match primary blue */
+    color: white; /* White text */
+    text-align: center; /* Center text */
+    padding: 1rem; /* Space around text */
+    margin-top: 1.5rem; /* Gap above footer */
 }
 
-footer p {
-    margin: 0;
-}
-
-footer a {
-    margin: 0;
+footer p, footer a {
+    margin: 0; /* Remove default margins */
 }

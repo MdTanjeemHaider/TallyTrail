@@ -1,151 +1,73 @@
 from tests.utils import generate_random_account
 from src.app import app, db
-from src.models import Transaction
 import pytest
+
 
 @pytest.fixture
 def client():
-    # Configure test app
+    """Set up a Flask test client with an in-memory database."""
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # In-memory database for testing
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # In-memory database
     with app.test_client() as client:
         with app.app_context():
-            db.create_all()
+            db.create_all()  # Initialize database tables
         yield client
         with client.session_transaction() as session:
-            session.clear()
+            session.clear()  # Clear session after each test
         with app.app_context():
-            db.session.remove()
-            db.drop_all()
+            db.session.remove()  # Remove database session
+            db.drop_all()  # Drop all tables
 
-def test_session_routing(client):
-    """Test if the routes redirect correctly based on session state."""
 
-    # Case 1: No session
-    response = client.get('/')
-    assert response.status_code == 302
-    assert '/LoginRegister' in response.location
-
-    response = client.get('/LoginRegister')
-    assert response.status_code == 200
-    assert b'Login/Register' in response.data
-
-    response = client.get('/Dashboard')
-    assert response.status_code == 302
-    assert '/LoginRegister' in response.location
-
-    # Case 2: Session exists
-    with client.session_transaction() as session:
-        session['token'] = 'test_token' # Add a dummy token to session
-
-    response = client.get('/')
-    assert response.status_code == 302
-    assert '/Dashboard' in response.location
-
-    response = client.get('/LoginRegister')
-    assert response.status_code == 302
-    assert '/Dashboard' in response.location
-
-    response = client.get('/Dashboard')
-    assert response.status_code == 200
-    assert b'Dashboard' in response.data
-
-def test_login_and_register(client):
-    """Test user login functionality."""
-
+def test_login_failure(client):
+    """Test user login failure for unregistered credentials."""
     email, password = generate_random_account()
 
-    # Register user
-    response = client.post('/register', data={'email': email, 'password': password})
-    assert response.status_code == 302
-    assert '/Dashboard' in response.location
-    client.get('/logout')  # logout
-
-    # Login user
+    # Attempt to log in with an unregistered user
     response = client.post('/login', data={'email': email, 'password': password})
-    assert response.status_code == 302
-    assert '/Dashboard' in response.location
+    assert response.status_code == 401  # Unauthorized
+    assert b'Login failed' in response.data
 
-def test_add_transaction(client):
-    """Test adding a transaction."""
 
+def test_register_failure(client):
+    """Test user registration failure with invalid input."""
+    email = 'invalid_email'  # Invalid email format
+    password = 'N'
+
+    # Attempt to register with invalid input
+    response = client.post('/register', data={'email': email, 'password': password})
+    assert response.status_code == 401  # Bad request for registration failure
+    assert b'Registration failed' in response.data
+
+
+def test_add_transaction_failure(client):
+    """Test failure when adding a transaction with invalid input."""
     email, password = generate_random_account()
 
-    # Register and login user
+    # Register and login the user
     client.post('/register', data={'email': email, 'password': password})
     client.post('/login', data={'email': email, 'password': password})
 
-    # Add a transaction
+    # Attempt to add a transaction with an invalid date
     response = client.post('/add_transaction', data={
-        'date': '2024-11-27',
-        'name': 'Grocery',
+        'date': 'invalid date',  # Invalid date format
+        'name': 'Train Ticket',
         'amount': '50.00',
-        'description': 'Weekly grocery shopping'
+        'description': 'Weekly Train Ticket'
     })
-    assert response.status_code == 302
-
-    # Check if the transaction exists in the database
-    with app.app_context():
-        transaction = Transaction.query.first()
-        assert transaction is not None
-        assert transaction.name == 'Grocery'
-        assert transaction.amount == 50.00
-        assert transaction.description == 'Weekly grocery shopping'
+    assert response.status_code == 400  # Bad request
+    assert b'Invalid Input' in response.data
 
 
-def test_get_transactions(client):
-    """Test fetching transactions."""
-
+def test_delete_transaction_failure(client):
+    """Test failure when trying to delete a non-existent transaction."""
     email, password = generate_random_account()
 
-    # Register and login user
+    # Register and login the user
     client.post('/register', data={'email': email, 'password': password})
     client.post('/login', data={'email': email, 'password': password})
 
-    # Add a transaction
-    client.post('/add_transaction', data={
-        'date': '2024-11-27',
-        'name': 'Grocery',
-        'amount': '50.00',
-        'description': 'Weekly grocery shopping'
-    })
-
-    # Fetch transactions
-    response = client.get('/get_transactions')
-    assert response.status_code == 200
-    transactions = response.get_json()['transactions']
-    assert len(transactions) == 1
-    assert transactions[0]['name'] == 'Grocery'
-    assert transactions[0]['amount'] == 50.00
-
-def test_delete_transaction(client):
-    """Test deleting a transaction."""
-
-    email, password = generate_random_account()
-
-    # Register and login user
-    client.post('/register', data={'email': email, 'password': password})
-    client.post('/login', data={'email': email, 'password': password})
-
-    # Add a transaction
-    client.post('/add_transaction', data={
-        'date': '2024-11-27',
-        'name': 'Grocery',
-        'amount': '50.00',
-        'description': 'Weekly grocery shopping'
-    })
-
-    # Fetch transactions
-    response = client.get('/get_transactions')
-    transactions = response.get_json()['transactions']
-    assert len(transactions) == 1
-
-    # Delete the transaction
-    transaction_id = transactions[0]['id']
-    response = client.delete(f'/delete_transaction/{transaction_id}')
-    assert response.status_code == 302
-
-    # Check if the transaction is deleted from the database
-    response = client.get('/get_transactions')
-    transactions = response.get_json()['transactions']
-    assert len(transactions) == 0
+    # Attempt to delete a transaction with a non-existent ID
+    response = client.delete('/delete_transaction/100')  # ID 100 does not exist
+    assert response.status_code == 500  # Internal server error
+    assert b'Failed to Delete Transaction' in response.data

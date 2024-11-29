@@ -1,113 +1,93 @@
-// On page load get transactions from server to display them in a table and graphs
-window.onload = function() {
-    // Get data from server
+// On page load, fetch transactions from the server to display in the table and graphs
+window.onload = function () {
     fetch('/get_transactions')
-    .then(response => response.json())
-    .then(data => {
-        // Update the table
-        updateTable(data.transactions);
+        .then(response => response.json())
+        .then(data => {
+            updateTable(data.transactions); // Populate table with transactions
+            sortTable(document.querySelector('th[data-column="date"]')); // Default sort by date
+            drawGraphs(data.transactions); // Draw spending, balance, and income graphs
+            console.log(data.transactions); // Log transactions for debugging
+        })
+        .catch(error => console.error('Error fetching transactions:', error));
+};
 
-        // Sort table by date
-        sortTable(document.querySelector('th[data-column="date"]'));
-
-        // Draw graphs
-        drawGraphs(data.transactions);
-
-        console.log(data.transactions);
-    }).catch(error => console.error('Error fetching transactions:', error));
-}
-
+/**
+ * Updates the transaction table with data
+ * @param {Array} transactions - List of transaction objects
+ */
 function updateTable(transactions) {
     const table = document.getElementById("transaction-table");
-    table.innerHTML = ""; // Clear the table
+    table.innerHTML = ""; // Clear existing table content
 
     transactions.forEach(transaction => {
-        // Create a row
         const row = document.createElement('tr');
-
-        // Set color based on transaction amount
-        const color = transaction.amount < 0 ? 'darkred' : 'green';
+        const color = transaction.amount < 0 ? 'darkred' : 'green'; // Red for spending, green for income
 
         // Create cells
+        row.appendChild(createCell(new Date(transaction.date).toLocaleDateString(), color));
+        row.appendChild(createCell(transaction.name, color));
+        row.appendChild(createCell(transaction.amount, color));
+        row.appendChild(createCell(transaction.description, color));
 
-        // Date cell
-        const dateCell = document.createElement('td');
-        dateCell.textContent = new Date(transaction.date).toLocaleDateString();
-        dateCell.style.backgroundColor = color;
-
-        // Name cell
-        const nameCell = document.createElement('td');
-        nameCell.textContent = transaction.name;
-        nameCell.style.backgroundColor = color;
-
-        // Amount cell
-        const amountCell = document.createElement('td');
-        amountCell.textContent = transaction.amount;
-        amountCell.style.backgroundColor = color;
-
-        // Description cell
-        const descriptionCell = document.createElement('td');
-        descriptionCell.textContent = transaction.description;
-        descriptionCell.style.backgroundColor = color;
-
-        // Delete cell
+        // Delete button cell
         const deleteCell = document.createElement('td');
         const deleteButton = document.createElement('button');
         deleteButton.innerHTML = '<span class="delete-icon">🗑️</span>';
-        deleteButton.onclick = function () {
-            deleteTransaction(transaction.id);
-        }
+        deleteButton.onclick = () => deleteTransaction(transaction.id);
         deleteButton.style.backgroundColor = color;
         deleteCell.appendChild(deleteButton);
         deleteCell.style.backgroundColor = color;
-
-        // Append cells to row
-        row.appendChild(dateCell);
-        row.appendChild(nameCell);
-        row.appendChild(amountCell);
-        row.appendChild(descriptionCell);
         row.appendChild(deleteCell);
 
-        // Append row to table
-        table.appendChild(row);
+        table.appendChild(row); // Add row to table
     });
 }
 
+/**
+ * Helper function to create a table cell
+ * @param {string} text - Cell content
+ * @param {string} color - Background color
+ */
+function createCell(text, color) {
+    const cell = document.createElement('td');
+    cell.textContent = text;
+    cell.style.backgroundColor = color;
+    return cell;
+}
+
+/**
+ * Draws spending, income, and balance graphs
+ * @param {Array} transactions - List of transaction objects
+ */
 function drawGraphs(transactions) {
     // Sort transactions by date
     transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Prepare data for graphs
-    const spending = [];
-    const income = [];
-    const balance = [];
-    const dates = [];
-
+    const spending = [], income = [], balance = [], dates = [];
     let totalBalance = 0;
 
-    transactions.forEach(transactions => {
-        const date = new Date(transactions.date).toLocaleDateString();
-        totalBalance += transactions.amount;
+    transactions.forEach(transaction => {
+        const date = new Date(transaction.date).toLocaleDateString();
+        totalBalance += transaction.amount;
 
         dates.push(date);
         balance.push(totalBalance);
-
-        if (transactions.amount < 0) {
-            spending.push(transactions.amount);
-            income.push(0);
-        } else {
-            income.push(transactions.amount);
-            spending.push(0);
-        }
+        spending.push(transaction.amount < 0 ? transaction.amount : 0);
+        income.push(transaction.amount > 0 ? transaction.amount : 0);
     });
 
-    // Render graphs
     renderGraph('spending-graph', 'Spending ($)', dates, spending);
     renderGraph('balance-graph', 'Balance ($)', dates, balance);
     renderGraph('income-graph', 'Income ($)', dates, income);
 }
 
-// Render a graph on a canvas
+/**
+ * Renders a graph on a specified canvas
+ * @param {string} canvasId - ID of the canvas element
+ * @param {string} title - Title of the graph
+ * @param {Array} labels - Labels for the graph
+ * @param {Array} data - Data points for the graph
+ */
 function renderGraph(canvasId, title, labels, data) {
     const context = document.getElementById(canvasId).getContext('2d');
     new Chart(context, {
@@ -117,124 +97,103 @@ function renderGraph(canvasId, title, labels, data) {
             datasets: [{
                 label: title,
                 data: data,
-                backgroundColor: 'rgba(255, 255, 255, 255)',
-                borderColor:'rgba(255, 255, 255, 255)',
-                borderWidth: 2
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 2,
             }]
         },
         options: {
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
+            plugins: { legend: { display: false } },
             scales: {
                 y: {
-                    title: {
-                        display: true,
-                        text: title,
-                        color: 'rgba(255, 255, 255, 255)'
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 255)'
-                    },
-                    ticks: {
-                        color: 'rgba(255, 255, 255, 255)'
-                    }
+                    title: { display: true, text: title, color: 'white' },
+                    grid: { color: 'white' },
+                    ticks: { color: 'white' }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Date',
-                        color: 'rgba(255, 255, 255, 255)'
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 255)'
-                    },
-                    ticks: {
-                        color: 'rgba(255, 255, 255, 255)'
-                    }
+                    title: { display: true, text: 'Date', color: 'white' },
+                    grid: { color: 'white' },
+                    ticks: { color: 'white' }
                 }
             }
         }
     });
 }
 
+/**
+ * Filters the transaction table based on user input
+ */
 function filterTable() {
-    const input = document.getElementById('search-input');
-    const table = document.getElementById('transaction-table');
-    const rows = Array.from(table.querySelectorAll('tr'));
+    const input = document.getElementById('search-input').value.toLowerCase();
+    const rows = Array.from(document.querySelectorAll('#transaction-table tr'));
 
     rows.forEach(row => {
         const transactionName = row.children[1].textContent.toLowerCase();
         const description = row.children[3].textContent.toLowerCase();
-
-        if (transactionName.includes(input.value.toLowerCase()) || description.includes(input.value.toLowerCase())) {
-            row.style.display = ''; // Show row
-        } else {
-            row.style.display = 'none'; // Hide row
-        }
-
-    })
+        row.style.display = transactionName.includes(input) || description.includes(input) ? '' : 'none';
+    });
 }
 
+/**
+ * Sorts the transaction table by a specified column
+ * @param {HTMLElement} header - Header cell clicked for sorting
+ */
 function sortTable(header) {
     const table = document.getElementById('transaction-table');
-    const rows = Array.from(table.querySelectorAll('tr')); // Get all table rows
-    const columnIndex = Array.from(header.parentNode.children).indexOf(header); // Get column index
-    const isAscending = header.getAttribute('data-order') === 'asc'; // Check current sort order
+    const rows = Array.from(table.querySelectorAll('tr'));
+    const columnIndex = Array.from(header.parentNode.children).indexOf(header);
+    const isAscending = header.getAttribute('data-order') === 'asc';
 
-    // Clear sort indicators on all headers
     header.parentNode.querySelectorAll('th').forEach(th => th.removeAttribute('data-order'));
-
-    // Set sort order for the clicked column
     header.setAttribute('data-order', isAscending ? 'desc' : 'asc');
 
-    // Sort rows
-    const sortedRows = rows.sort((a, b) => {
+    rows.sort((a, b) => {
         const aValue = a.children[columnIndex].textContent.trim();
         const bValue = b.children[columnIndex].textContent.trim();
-
-        if (isNaN(aValue) && isNaN(bValue)) {
-            return isAscending
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        } else {
-            return isAscending ? aValue - bValue : bValue - aValue;
-        }
+        return isNaN(aValue) && isNaN(bValue)
+            ? isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+            : isAscending ? aValue - bValue : bValue - aValue;
     });
 
-    // Append sorted rows back to the table body
-    sortedRows.forEach(row => table.appendChild(row));
+    rows.forEach(row => table.appendChild(row));
 }
 
-
-
+/**
+ * Deletes a transaction by ID
+ * @param {number} transactionId - ID of the transaction to delete
+ */
 function deleteTransaction(transactionId) {
-    // Send delete request to server
-    fetch(`/delete_transaction/${transactionId}`,{method: 'DELETE'}).then(response => {
-        // Reload page
-        window.location.href = response.url;
-    });
+    fetch(`/delete_transaction/${transactionId}`, { method: 'DELETE' })
+        .then(response => window.location.href = response.url)
+        .catch(error => console.error('Error deleting transaction:', error));
 }
 
+/**
+ * Opens the modal
+ */
 function openModal() {
-    document.getElementById("modal").style.display = "flex"; // Show modal
+    document.getElementById("modal").style.display = "flex";
 }
 
+/**
+ * Closes the modal
+ */
 function closeModal() {
-    document.getElementById("modal").style.display = "none"; // Hide modal
+    document.getElementById("modal").style.display = "none";
 }
 
-window.onclick = function(event) {
+// Closes modal when clicking outside it
+window.onclick = function (event) {
     const modal = document.getElementById("modal");
-    if (event.target == modal) {
-        modal.style.display = "none"; // Hide modal if clicked outside
+    if (event.target === modal) {
+        closeModal();
     }
-}
+};
 
+/**
+ * Logs the user out by clearing the session
+ */
 function logout() {
-    fetch('/logout', {method: 'POST'}).then(response => {
-        window.location.href = response.url;
-    })
+    fetch('/logout', { method: 'POST' })
+        .then(response => window.location.href = response.url)
+        .catch(error => console.error('Error logging out:', error));
 }

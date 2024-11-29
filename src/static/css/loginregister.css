@@ -1,80 +1,86 @@
+/* General Reset and Layout Setup */
 html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    background-color: #202123;
+    height: 100%; /* Full viewport height */
+    margin: 0; /* Remove default margin */
+    display: flex; /* Flex layout for structure */
+    flex-direction: column; /* Stack elements vertically */
+    background-color: #202123; /* Dark background */
 }
 
+/* Main Content Container */
 .main-container {
-    flex: 1; /* Fills available space between header and footer */
+    flex: 1; /* Expands to fill available space between header and footer */
 }
 
+/* Logo Section */
 .logo-container {
-    margin: 1rem auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
+    margin: 1rem auto; /* Center horizontally with margin */
+    display: flex; /* Flex layout for alignment */
+    flex-direction: column; /* Stack logo and text */
+    align-items: center; /* Center items */
+    color: white; /* White text for contrast */
 }
 
+/* Login and Register Containers */
 .login-container, .register-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #0056b3;
-    padding: 1rem;
-    border-radius: 20px;
-    margin: 1rem auto;
-    max-width: 40%;
-    color: white;
+    display: flex; /* Flex layout for alignment */
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center items */
+    background-color: #0056b3; /* Dark blue background */
+    padding: 1rem; /* Space inside container */
+    border-radius: 20px; /* Rounded corners */
+    margin: 1rem auto; /* Center horizontally with margin */
+    max-width: 40%; /* Limit width for responsiveness */
+    color: white; /* White text for readability */
 }
 
+/* Headings in Login and Register Containers */
 .login-container h1, .register-container h1 {
-    margin: 0;
+    margin: 0; /* Remove default margin */
 }
 
+/* Forms inside Login and Register Containers */
 .login-container form, .register-container form {
-    display: flex;
-    flex-direction: column;
-    width: 60%;
+    display: flex; /* Flex layout */
+    flex-direction: column; /* Stack form elements */
+    width: 60%; /* Form width relative to container */
 }
 
+/* Inputs in Login and Register Containers */
 .login-container input, .register-container input {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: none;
+    margin: 0.5rem 0; /* Spacing between inputs */
+    padding: 0.5rem; /* Space inside input box */
+    border-radius: 5px; /* Slightly rounded corners */
+    border: none; /* Remove default border */
 }
 
+/* Buttons in Login and Register Containers */
 .login-container button, .register-container button {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: none;
-    background-color: orange;
-    color: white;
-    cursor: pointer;
-    font-weight: bolder;
-    font-size: large;
+    margin: 0.5rem 0; /* Spacing between buttons */
+    padding: 0.5rem; /* Space inside button */
+    border-radius: 5px; /* Rounded corners */
+    border: none; /* Remove default border */
+    background-color: orange; /* Bright button color */
+    color: white; /* White text for contrast */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-weight: bolder; /* Bold text */
+    font-size: large; /* Larger font size */
 }
 
+/* Button Hover Effect */
 .login-container button:hover, .register-container button:hover {
-    filter: brightness(1.1);
+    filter: brightness(1.1); /* Slightly brighten button */
 }
 
+/* Footer Section */
 footer {
-    background-color: #007BFF;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    margin-top: 1.5rem;
+    background-color: #007BFF; /* Primary blue background */
+    color: white; /* White text */
+    text-align: center; /* Centered text */
+    padding: 1rem; /* Space inside footer */
+    margin-top: 1.5rem; /* Gap above footer */
 }
 
-footer p {
-    margin: 0;
-}
-
-footer a {
-    margin: 0;
+footer p , footer a {
+    margin: 0; /* Remove default margin */
 }
